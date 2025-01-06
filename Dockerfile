@@ -13,8 +13,6 @@
    # Copy the entire source code into the container
    COPY . .
 
-   COPY .env.test .env.test
-
    # Change to the directory where main.go is located
    WORKDIR /app/cmd/api
 
@@ -31,10 +29,8 @@
 
    # Copy the Pre-built binary file from the previous stage
    COPY --from=builder /app/cmd/api/myapp .
-   
-   COPY --from=builder /app/.env.test .
 
-
+   COPY .env .env
    # Expose port 8080 to the outside world
    EXPOSE 8080
 

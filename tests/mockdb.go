@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	godotenv.Load("../.env.test")
+	godotenv.Load("../.env")
 }
 
 func SetupTestDB() *gorm.DB {

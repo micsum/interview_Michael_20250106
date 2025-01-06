@@ -20,8 +20,8 @@ type PostgresConfig struct {
 }
 
 func LoadTestConfig() (*DatabaseConfig, error) {
-	if err := godotenv.Load(".env.test"); err != nil {
-		return nil, fmt.Errorf("error loading .env.test file: %w", err)
+	if err := godotenv.Load(".env"); err != nil {
+		return nil, fmt.Errorf("error loading .env file: %w", err)
 	}
 
 	cfg := &DatabaseConfig{
