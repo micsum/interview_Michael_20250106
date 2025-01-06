@@ -1,0 +1,812 @@
+basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  oxo-game-api_internal_models.Challenge:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      player_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  oxo-game-api_internal_models.ChallengeResult:
+    properties:
+      challenge:
+        $ref: '#/definitions/oxo-game-api_internal_models.Challenge'
+      challenge_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      player:
+        $ref: '#/definitions/oxo-game-api_internal_models.Player'
+      player_id:
+        type: integer
+      won:
+        type: boolean
+    type: object
+  oxo-game-api_internal_models.GameLog:
+    properties:
+      action:
+        type: string
+      details:
+        type: string
+      id:
+        type: integer
+      player_id:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  oxo-game-api_internal_models.Level:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      max_exp:
+        type: integer
+      min_exp:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  oxo-game-api_internal_models.Payment:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      details:
+        type: string
+      error_message:
+        type: string
+      id:
+        type: integer
+      method:
+        type: string
+      status:
+        type: string
+      transaction_id:
+        type: string
+    type: object
+  oxo-game-api_internal_models.Player:
+    properties:
+      balance:
+        type: number
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      level:
+        $ref: '#/definitions/oxo-game-api_internal_models.Level'
+      level_id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  oxo-game-api_internal_models.Reservation:
+    properties:
+      created_at:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      player_id:
+        type: integer
+      room:
+        $ref: '#/definitions/oxo-game-api_internal_models.Room'
+      room_id:
+        type: integer
+      time:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  oxo-game-api_internal_models.Room:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  oxo-game-api_pkg_utils_response.JoinResponse:
+    properties:
+      challenge_id:
+        type: integer
+      message:
+        type: string
+      success_join:
+        type: boolean
+    type: object
+  oxo-game-api_pkg_utils_response.LevelCreateResponse:
+    properties:
+      level_id:
+        type: integer
+    type: object
+  oxo-game-api_pkg_utils_response.LogCreateResponse:
+    properties:
+      log_id:
+        type: integer
+    type: object
+  oxo-game-api_pkg_utils_response.PaymentError:
+    properties:
+      code:
+        type: integer
+      error_message:
+        type: string
+      status:
+        type: string
+      transaction_id:
+        type: string
+    type: object
+  oxo-game-api_pkg_utils_response.PlayerCreateResponse:
+    properties:
+      player_id:
+        type: integer
+    type: object
+  oxo-game-api_pkg_utils_response.ReservCreateResponse:
+    properties:
+      reservation_id:
+        type: integer
+    type: object
+  oxo-game-api_pkg_utils_response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  oxo-game-api_pkg_utils_response.RoomCreateResponse:
+    properties:
+      room_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: sumchuman@gmail.com
+    name: Michael Sum
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OXO Game API
+  version: "1.0"
+paths:
+  /challenges:
+    post:
+      consumes:
+      - application/json
+      description: Player joins a challenge by POST, returns status
+      parameters:
+      - description: Challenge information
+        in: body
+        name: challenge
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Challenge'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.JoinResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Join a challenge
+      tags:
+      - challenges
+  /challenges/results:
+    get:
+      description: Fetches all challenge results
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/oxo-game-api_internal_models.ChallengeResult'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get challenge results
+      tags:
+      - challenges
+  /levels:
+    get:
+      consumes:
+      - application/json
+      description: Get all levels with details
+      parameters:
+      - description: Level information
+        in: body
+        name: level
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Level'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Level'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get
+      tags:
+      - levels
+    post:
+      consumes:
+      - application/json
+      description: Create a new level with the specified name
+      parameters:
+      - description: Level information
+        in: body
+        name: level
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Level'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.LevelCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Create a new level
+      tags:
+      - levels
+  /logs:
+    get:
+      description: Fetches game logs based on query parameters
+      parameters:
+      - description: Player ID
+        in: query
+        name: player_id
+        type: integer
+      - description: Action type
+        in: query
+        name: action
+        type: string
+      - description: Start time in RFC3339 format
+        in: query
+        name: start_time
+        type: string
+      - description: End time in RFC3339 format
+        in: query
+        name: end_time
+        type: string
+      - description: Limit the number of logs
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/oxo-game-api_internal_models.GameLog'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get game logs
+      tags:
+      - logs
+    post:
+      consumes:
+      - application/json
+      description: Creates a new game log entry
+      parameters:
+      - description: Game log information
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.GameLog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.LogCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Create a new game log
+      tags:
+      - logs
+  /payments:
+    post:
+      consumes:
+      - application/json
+      description: Process a payment with the specified method and amount
+      parameters:
+      - description: Payment information
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Payment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "402":
+          description: Payment Required
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.PaymentError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Process a payment
+      tags:
+      - payments
+  /payments/{id}:
+    get:
+      description: Get details of a specific payment by ID
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Payment'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get payment details
+      tags:
+      - payments
+  /players:
+    get:
+      description: Fetches a list of all players
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/oxo-game-api_internal_models.Player'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get all players
+      tags:
+      - players
+    post:
+      consumes:
+      - application/json
+      description: Creates a new player with the specified details
+      parameters:
+      - description: Player information
+        in: body
+        name: player
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Player'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.PlayerCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Create a new player
+      tags:
+      - players
+  /players/{id}:
+    delete:
+      description: Deletes a player by their ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Delete a player by ID
+      tags:
+      - players
+    get:
+      description: Fetches a player by their ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Player'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get a player by ID
+      tags:
+      - players
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of a player by their ID
+      parameters:
+      - description: Player ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated player information
+        in: body
+        name: player
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Player'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Player'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Update a player by ID
+      tags:
+      - players
+  /reservations:
+    get:
+      description: Fetches reservations based on query parameters
+      parameters:
+      - description: Room ID
+        in: query
+        name: room_id
+        type: string
+      - description: Reservation date in YYYY-MM-DD format
+        in: query
+        name: date
+        type: string
+      - description: Limit the number of reservations
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/oxo-game-api_internal_models.Reservation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get reservations
+      tags:
+      - reservations
+    post:
+      consumes:
+      - application/json
+      description: Creates a new reservation with the specified details
+      parameters:
+      - description: Reservation information
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Reservation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.ReservCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Create a new reservation
+      tags:
+      - reservations
+  /rooms:
+    get:
+      description: Fetches a list of all rooms
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/oxo-game-api_internal_models.Room'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get all rooms
+      tags:
+      - rooms
+    post:
+      consumes:
+      - application/json
+      description: Creates a new room with the specified details
+      parameters:
+      - description: Room information
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Room'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.RoomCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Create a new room
+      tags:
+      - rooms
+  /rooms/{id}:
+    delete:
+      description: Deletes a room by its ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Delete a room by ID
+      tags:
+      - rooms
+    get:
+      description: Fetches a room by its ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Room'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Get a room by ID
+      tags:
+      - rooms
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of a room by its ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated room information
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/oxo-game-api_internal_models.Room'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oxo-game-api_internal_models.Room'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/oxo-game-api_pkg_utils_response.Response'
+      summary: Update a room by ID
+      tags:
+      - rooms
+swagger: "2.0"
