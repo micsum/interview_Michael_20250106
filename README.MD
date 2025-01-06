@@ -10,13 +10,13 @@ This project requires a `.env.test` file to configure the database connection fo
 
 2. **Add the following environment variables** to the `.env.test` file:
 
- 
+   ```env
    TEST_DB_HOST=db
    TEST_DB_USER=<YOUR DB USER>
    TEST_DB_PASS=<YOUR PASSWORD>
    TEST_DB_NAME=<DATABASE NAME>>
-   TEST_DB_PORT=<PORT NO, 5432 usually>
-   
+   TEST_DB_PORT=<PORT NO.>
+   ```
 
 3. **Explanation of the Variables**:
    - `TEST_DB_HOST`: The hostname of the database server. For local testing, this is usually set to `db` due to docker container.
